@@ -1,3 +1,4 @@
 .vagrant/
 countdown.db
 *.pyc
+./idea
