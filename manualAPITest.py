@@ -6,3 +6,5 @@ if __name__ == "__main__":
     print r.content
     r = requests.post('http://localhost:5000/create_task', data=json.dumps({'username':'walter', 'task': {'name': 'taskthing', 'completed': 'f'}}))
     print r.content
+    r = requests.get('http://localhost:5000/get_active_tasks', data=json.dumps({'username':'walter'}))
+    print r.content

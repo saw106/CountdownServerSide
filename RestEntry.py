@@ -4,13 +4,14 @@ from DBResources import *
 import json
 app = Flask(__name__)
 
-'''  createuser
-     createtask
-     getactivetasksforuser
+'''  createuser x
+     createtask x
+     getactivetasksforuser x
      getarchivedtasksforuser
      unarchivetask
      completetask
      deletetask
+     getNextCountDownForUser
 '''
 
 @app.route("/create_user", methods=["POST"])
@@ -29,11 +30,17 @@ def createNewTask():
     ret = {}
     req = json.loads(request.get_data())
     if (doesUserExist(req['username'])):
-        print req
         createTask(getUserId(req['username']), req['task']['name'])
         ret['status'] = True
     else:
         ret['status'] = False
+    return json.dumps(ret)
+
+@app.route('/get_active_tasks', methods=["GET"])
+def getActiveUserTasks():
+    ret = {}
+    req = json.loads(request.get_data())
+    ret['tasks'] = getActiveTasksForUser(getUserId(req['username']))
     return json.dumps(ret)
 
 if __name__ == "__main__":

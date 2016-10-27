@@ -49,6 +49,7 @@ def getUserId(username, conn=None):
     rows = c.execute('''select * from users where username='{}' '''.format(username))
     for row in rows:
         return row[0]
+    return -1
 
 
 def createTask(userid, name, conn=None):
