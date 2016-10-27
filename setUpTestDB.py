@@ -1,5 +1,4 @@
 import sqlite3
-import datetime
 from DBResources import *
 
 conn = sqlite3.connect('countdown_test.db')
@@ -16,34 +15,34 @@ c.execute('''CREATE TABLE hastask
              FOREIGN KEY (taskid) REFERENCES tasks(id))''')
 
 c.execute('''INSERT INTO users
-             VALUES (1, "user_1", "password_1", datetime.datetime(2016,9,1,0,0,0))''')
+             VALUES (1, "user_1", "password_1", "9/1/2016")''')
 c.execute('''INSERT INTO users
-             VALUES (2, "user_2", "password_2", datetime.datetime(2016,9,2,0,0,0))''')
+             VALUES (2, "user_2", "password_2", "9/2/2016")''')
 c.execute('''INSERT INTO users
-             VALUES (3, "user_3", "password_3", datetime.datetime(2016,9,3,0,0,0))''')
+             VALUES (3, "user_3", "password_3", "9/3/2016")''')
 
 c.execute('''INSERT INTO tasks
-             VALUES (11, "task_1", "description_1", datetime.datetime(2016,11,1,10,0,0), "1", "tag_1", "AAAAAA", "BBBBBB",
-                     datetime.datetime(2016,10,1), datetime.datetime(2016,10,26), "true",
-                     datetime.datetime(2016,10,26))''')
+             VALUES (11, "task_1", "description_1", "11/1/2016", "1", "tag_1", "AAAAAA", "BBBBBB",
+                     "10/1/2016", "10/26/2016", "true",
+                     "10/26/2016")''')
 c.execute('''INSERT INTO tasks
-             VALUES (12, "task_2", "description_2", datetime.datetime(2016,11,15,12,30,0), "2", "tag_1", "FFFFFF", "BBBBBB",
-                     datetime.datetime(2016,10,1), datetime.datetime(2016,10,1), "false", null)''')
+             VALUES (12, "task_2", "description_2", "11/15/2016 12:30PM", "2", "tag_1", "FFFFFF", "BBBBBB",
+                     "10/1/2016", "10/1/2016", "false", null)''')
 c.execute('''INSERT INTO tasks
-             VALUES (13, "task_3", "description_3", datetime.datetime(2016,11,1), "1", "tag_2", "AAAAAA", "BBBBBB",
-                     datetime.datetime(2016,10,1), datetime.datetime(2016,10,1), "false", null)''')
+             VALUES (13, "task_3", "description_3", "11/1/2016", "1", "tag_2", "AAAAAA", "BBBBBB",
+                     "10/1/2016", "10/1/2016", "false", null)''')
 c.execute('''INSERT INTO tasks
-             VALUES (14, "task_4", "description_4", datetime.datetime(2016,11,1,15,0,0), "3", "tag_2", "AAAAAA", "DDDDDD",
-                     datetime.datetime(2016,10,1), datetime.datetime(2016,10,1), "false", null)''')
+             VALUES (14, "task_4", "description_4", "11/1/2016 3:00PM", "3", "tag_2", "AAAAAA", "DDDDDD",
+                     "10/1/2016", "10/1/2016", "false", null)''')
 c.execute('''INSERT INTO tasks
-             VALUES (15, "task_5", "description_5", datetime.datetime(2016,10,14), "2", "tag_3", "AAAAAA", "BBBBBB",
-                    datetime.datetime(2016,10,1), datetime.datetime(2016,10,15), "true", datetime.datetime(2016,10,15))''')
+             VALUES (15, "task_5", "description_5", "10/14/2016", "2", "tag_3", "AAAAAA", "BBBBBB",
+                    "10/1/2016", "10/15/2016", "true", "10/15/2016")''')
 c.execute('''INSERT INTO tasks
-             VALUES (16, "task_6", "description_6", datetime.datetime(2016,11,1,10,0,0), "1", "tag_1", "CCCCCC", "BBBBBB",
-                    datetime.datetime(2016,10,1), datetime.datetime(2016,10,1), "false", null)''')
+             VALUES (16, "task_6", "description_6", "11/1/2016", "1", "tag_1", "CCCCCC", "BBBBBB",
+                    "10/1/2016", "10/1/2016", "false", null)''')
 c.execute('''INSERT INTO tasks
-             VALUES (17, "task_7", "description_7", datetime.datetime(2016,11,1,7,30,0), "2", "tag_4", "AAAAAA", "BBBBBB",
-                     datetime.datetime(2016,10,1), datetime.datetime(2016,10,1), "false", null)''')
+             VALUES (17, "task_7", "description_7", "11/1/2016 7:30AM", "2", "tag_4", "AAAAAA", "BBBBBB",
+                     "10/1/2016", "10/1/2016", "false", null)''')
 
 c.execute('''INSERT INTO hastask
              VALUES (1, 11)''')
