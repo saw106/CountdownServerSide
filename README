@@ -1,14 +1,16 @@
 Required to start backend:
 	Vagrant
+	VirtualBox
 
 Once you have Vagrant installed and working, do `vagrant up` in the base directory to start the server.
 
 Next you can access the server via `vagrant ssh`.
 	All files in the project folder are in /vagrant.
-	To provision the server(update so you can use Flask, etc) please do `sudo /vagrant/bootstrap.sh`
+	To provision the server(update so you can use Flask, etc) please do `cd /vagrant; sudo ./bootstrap.sh`
 
 When you want to shut down the VM, use `vagrant halt` and NOT `vagrant destroy`, we don't want to waste time provisioning more than once.
 
+IN THE TOP LEVEL DIRECTORY:
 Start the rest API/server with `python RestEntry.py`.
 
 The SQLite database is file based and needs no setup besides initializing with `python setUpDB.py`

@@ -3,6 +3,15 @@ from DBResources import *
 import json
 app = Flask(__name__)
 
+'''  createuser
+     createtask
+     getactivetasksforuser
+     getarchivedtasksforuser
+     unarchivetask
+     completetask
+     deletetask
+'''
+
 @app.route("/users")
 def usersEndPoint():
     ret = {}

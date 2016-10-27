@@ -50,6 +50,7 @@ def getNextCountdown(userid, conn=None):
         retarray.append(row)
     return retarray
 
+#used for testing
 if __name__ == "__main__":
     conn = sqlite3.connect('countdown.db')
     # createUser('testuser', 'pw', conn=conn)
