@@ -27,26 +27,26 @@ c.execute('''INSERT INTO users
 
 c.execute('''INSERT INTO tasks
              VALUES (11, "task_1", "description_1", "11/1/2016", "1", "tag_1", "AAAAAA", "BBBBBB",
-                     "10/1/2016", "10/26/2016", "true",
+                     "10/1/2016", "10/26/2016", "t",
                      "10/26/2016")''')
 c.execute('''INSERT INTO tasks
              VALUES (12, "task_2", "description_2", "11/15/2016 12:30PM", "2", "tag_1", "FFFFFF", "BBBBBB",
-                     "10/1/2016", "10/1/2016", "false", null)''')
+                     "10/1/2016", "10/1/2016", "f", null)''')
 c.execute('''INSERT INTO tasks
              VALUES (13, "task_3", "description_3", "11/1/2016", "1", "tag_2", "AAAAAA", "BBBBBB",
-                     "10/1/2016", "10/1/2016", "false", null)''')
+                     "10/1/2016", "10/1/2016", "f", null)''')
 c.execute('''INSERT INTO tasks
              VALUES (14, "task_4", "description_4", "11/1/2016 3:00PM", "3", "tag_2", "AAAAAA", "DDDDDD",
-                     "10/1/2016", "10/1/2016", "false", null)''')
+                     "10/1/2016", "10/1/2016", "f", null)''')
 c.execute('''INSERT INTO tasks
              VALUES (15, "task_5", "description_5", "10/14/2016", "2", "tag_3", "AAAAAA", "BBBBBB",
-                    "10/1/2016", "10/15/2016", "true", "10/15/2016")''')
+                    "10/1/2016", "10/15/2016", "t", "10/15/2016")''')
 c.execute('''INSERT INTO tasks
              VALUES (16, "task_6", "description_6", "11/1/2016", "1", "tag_1", "CCCCCC", "BBBBBB",
-                    "10/1/2016", "10/1/2016", "false", null)''')
+                    "10/1/2016", "10/1/2016", "f", null)''')
 c.execute('''INSERT INTO tasks
              VALUES (17, "task_7", "description_7", "11/1/2016 7:30AM", "2", "tag_4", "AAAAAA", "BBBBBB",
-                     "10/1/2016", "10/1/2016", "false", null)''')
+                     "10/1/2016", "10/1/2016", "f", null)''')
 
 c.execute('''INSERT INTO hastask
              VALUES (0, 11)''')

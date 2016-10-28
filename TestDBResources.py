@@ -6,6 +6,7 @@ test_db_conn = sqlite3.connect('countdown_test.db')
 test_user_name = "test_user_123"
 test_password = "test_password_123"
 
+
 class TestDBResources(unittest.TestCase):
 
     def testGetNumUsers(self):
@@ -25,19 +26,33 @@ class TestDBResources(unittest.TestCase):
         self.assertEquals(test_password, r['password'])
         c.execute('''DELETE FROM users WHERE users.username='{}' AND users.password='{}' '''.format(test_user_name, test_password)).fetchone()
 
+    def testDoesUserExist(self):
+        self.assertTrue(doesUserExist("user_1", test_db_conn))
+        self.assertFalse(doesUserExist("some_random_user_123456", test_db_conn))
+
+    def testGetUserId(self):
+        self.assertEquals(0, getUserId("user_1", test_db_conn))
+        self.assertEquals(1, getUserId("user_2", test_db_conn))
+
     def testCreateNewTask(self):
         test_task_name = "test_name_123"
-        user_1_username = "user_1"
         user_1_id = 0
-        createNewTask(user_1_id, test_task_name, test_db_conn)
-        conn = test_db_conn
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
+        createTask(user_1_id, test_task_name, test_db_conn)
+        test_conn = test_db_conn
+        test_conn.row_factory = sqlite3.Row
+        c = test_conn.cursor()
         r = c.execute('''SELECT * FROM tasks T WHERE T.name=\'{}\''''.format(test_task_name)).fetchone()
         self.assertIsNotNone(r)
         self.assertEquals(test_task_name, r['name'])
         task_id = r['id']
         r2 = c.execute('''SELECT * FROM hastask H WHERE H.userid={} AND H.taskid={}'''.format(user_1_id, task_id)).fetchone()
         self.assertIsNotNone(r2)
+        # Delete the test task
         c.execute('''DELETE FROM tasks WHERE tasks.name='{}' '''.format(test_task_name))
         c.execute('''DELETE FROM hastask WHERE hastask.userid={} AND hastask.taskid={}'''.format(user_1_id, task_id))
+
+    def testGetActiveTasksForUser(self):
+        tasks_for_0 = getActiveTasksForUser(0, test_db_conn)
+        self.assertEquals(3, len(tasks_for_0))
+        tasks_for_1 = getActiveTasksForUser(1, test_db_conn)
+        self.assertEquals(1, len(tasks_for_1))
