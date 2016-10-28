@@ -27,15 +27,15 @@ def createUser(username, password, conn=None):
     c.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(getNumUsers(conn), username, password))
     conn.commit()
 
-def createNewTask(userid, name, conn=None):
+def createNewTask(newUserid, name, conn=None):
     c = None
     if conn is None:
         conn = sqlite3.connect('countdown.db')
     c = conn.cursor()
 
-    newTaskID = getNumTasks()
+    newTaskID = getNumTasks(conn)
     c.execute('''INSERT INTO tasks (id, name) VALUES ({}, '{}')'''.format(newTaskID, name))
-    c.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, newTaskID))
+    c.execute('''INSERT INTO hastask (userid, taskid) VALUES ({},{})'''.format(newUserid, newTaskID))
     conn.commit()
 
 def getNextCountdown(userid, conn=None):
@@ -50,7 +50,7 @@ def getNextCountdown(userid, conn=None):
         retarray.append(row)
     return retarray
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     conn = sqlite3.connect('countdown.db')
     # createUser('testuser', 'pw', conn=conn)
     # createNewTask(0, 'sometask1', conn=conn)

@@ -5,6 +5,10 @@ conn = sqlite3.connect('countdown_test.db')
 
 c = conn.cursor()
 
+c.execute("DROP TABLE IF EXISTS users")
+c.execute("DROP TABLE IF EXISTS tasks")
+c.execute("DROP TABLE IF EXISTS hastask")
+
 c.execute('''CREATE TABLE users
             (id INT NOT NULL, username, password, creation_date DATETIME, PRIMARY KEY (id))''')
 c.execute('''CREATE TABLE tasks
@@ -15,11 +19,11 @@ c.execute('''CREATE TABLE hastask
              FOREIGN KEY (taskid) REFERENCES tasks(id))''')
 
 c.execute('''INSERT INTO users
-             VALUES (1, "user_1", "password_1", "9/1/2016")''')
+             VALUES (0, "user_1", "password_1", "9/1/2016")''')
 c.execute('''INSERT INTO users
-             VALUES (2, "user_2", "password_2", "9/2/2016")''')
+             VALUES (1, "user_2", "password_2", "9/2/2016")''')
 c.execute('''INSERT INTO users
-             VALUES (3, "user_3", "password_3", "9/3/2016")''')
+             VALUES (2, "user_3", "password_3", "9/3/2016")''')
 
 c.execute('''INSERT INTO tasks
              VALUES (11, "task_1", "description_1", "11/1/2016", "1", "tag_1", "AAAAAA", "BBBBBB",
@@ -45,19 +49,19 @@ c.execute('''INSERT INTO tasks
                      "10/1/2016", "10/1/2016", "false", null)''')
 
 c.execute('''INSERT INTO hastask
-             VALUES (1, 11)''')
+             VALUES (0, 11)''')
 c.execute('''INSERT INTO hastask
-             VALUES (1, 12)''')
+             VALUES (0, 12)''')
 c.execute('''INSERT INTO hastask
-             VALUES (1, 13)''')
+             VALUES (0, 13)''')
 c.execute('''INSERT INTO hastask
-             VALUES (1, 14)''')
+             VALUES (0, 14)''')
 c.execute('''INSERT INTO hastask
-             VALUES (2, 15)''')
+             VALUES (1, 15)''')
 c.execute('''INSERT INTO hastask
-             VALUES (2, 16)''')
+             VALUES (1, 16)''')
 c.execute('''INSERT INTO hastask
-             VALUES (3, 17)''')
+             VALUES (2, 17)''')
 
 
 c.execute
