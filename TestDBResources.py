@@ -64,3 +64,6 @@ class TestDBResources(unittest.TestCase):
         self.assertEquals(3, len(tasks_for_0))
         tasks_for_1 = getActiveTasksForUser(1, test_db_conn)
         self.assertEquals(1, len(tasks_for_1))
+
+if __name__ == '__main__':
+    unittest.main()
