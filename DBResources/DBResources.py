@@ -58,7 +58,7 @@ def createTask(userid, name, conn=None):
         conn = sqlite3.connect('countdown.db')
     c = conn.cursor()
 
-    newTaskID = getNumTasks()
+    newTaskID = getNumTasks(conn)
     c.execute('''INSERT INTO tasks (id, name, completed) VALUES ({}, '{}', 'f')'''.format(newTaskID, name))
     c.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, newTaskID))
     print "Created New task for {}".format(userid)
