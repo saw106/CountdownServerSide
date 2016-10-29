@@ -7,6 +7,7 @@ Once you have Vagrant installed and working, do `vagrant up` in the base directo
 Next you can access the server via `vagrant ssh`.
 	All files in the project folder are in /vagrant.
 	To provision the server(update so you can use Flask, etc) please do `cd /vagrant; sudo ./bootstrap.sh`
+		This may break due to what appears to be some invisible characters. in that case, just run the individual commands from bootstrap.sh individually.
 
 When you want to shut down the VM, use `vagrant halt` and NOT `vagrant destroy`, we don't want to waste time provisioning more than once.
 
