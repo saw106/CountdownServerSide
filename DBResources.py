@@ -1,95 +1,85 @@
 import sqlite3
 
-TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime']
 
-def getNumUsers(conn=None):
-    c = None;
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
-    rows = c.execute('''select count(*) from users''')
-    for row in rows:
-        return row[0]
+class DBResource:
+    TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime']
 
-def getNumTasks(conn=None):
-    c = None;
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
-    rows = c.execute('''select count(*) from tasks''')
-    for row in rows:
-        return row[0]
+    def __init__(self, user_info=None, conn=None) :
+        self.user_info = user_info
+        if conn is None:
+            self.conn = sqlite3.connect('countdown.db')
+        else:
+            self.conn = conn
+        self.cursor = conn.cursor()
 
-def createUser(username, password, conn=None):
-    c = None
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
+    def checkUserCredentials(self, func):
+        def func_wrapper(*args, **kwargs):
+            if (verifyPassword):
+                return fun(*args, **kwargs)
+            return {'Error': 'User {} given with invalid password.'}
+        return func_wrapper
 
-    c.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(getNumUsers(conn), username, password))
-    print "Created new User {}".format(username)
-    conn.commit()
+    def verifyPassword(self):
+        rows = self.cursor.execute('''select * from users where username='{}' and password='{}' '''.format(self.user_info['username', self.user_info['password']]))
+        for row in rows:
+            return True
+        return False
 
-def doesUserExist(username, conn=None):
-    c = None
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
+    def getNumUsers(conn=None):
+        rows = self.cursor.execute('''select count(*) from users''')
+        for row in rows:
+            return row[0]
 
-    rows = c.execute('''select * from users where username='{}' '''.format(username))
-    for row in rows:
-        return True
-    return False
+    def getNumTasks(conn=None):
+        rows = self.cursor.execute('''select count(*) from tasks''')
+        for row in rows:
+            return row[0]
 
-def getUserId(username, conn=None):
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
-    
-    rows = c.execute('''select * from users where username='{}' '''.format(username))
-    for row in rows:
-        return row[0]
-    return -1
+    def createUser(username, password):
+        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(getNumUsers(conn), username, password))
+        print "Created new User {}".format(username)
+        self.conn.commit()
 
+    def doesUserExist(username):
+        rows = self.cursor.execute('''select * from users where username='{}' '''.format(username))
+        for row in rows:
+            return True
+        return False
 
-def createTask(userid, name, conn=None):
-    c = None
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
-
-    newTaskID = getNumTasks(conn)
-    c.execute('''INSERT INTO tasks (id, name, completed) VALUES ({}, '{}', 'f')'''.format(newTaskID, name))
-    c.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, newTaskID))
-    print "Created New task for {}".format(userid)
-    conn.commit()
-
-def getActiveTasksForUser(userid, conn=None):
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
-    tasks = []
-    for row in c.execute('''select * from tasks where completed='f' and id in (select taskid from hastask where userid={})'''.format(userid)):
-        task = {}
-        i = 0
-        for column_name in TASK_COLUMNS:
-            task[column_name] = row[i]
-            i += 1
-        tasks.append(task)
-    return tasks
+    def getUserId(username):
+        rows = self.cursor.execute('''select * from users where username='{}' '''.format(username))
+        for row in rows:
+            return row[0]
+        return -1
 
 
-def getNextCountdown(userid, conn=None):
-    c = None
-    if conn is None:
-        conn = sqlite3.connect('countdown.db')
-    c = conn.cursor()
+    @checkUserCredentials
+    def createTask(name):
+        newTaskID = self.getNumTasks()
+        self.cursor.execute('''INSERT INTO tasks (id, name, completed) VALUES ({}, '{}', 'f')'''.format(newTaskID, name))
+        self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, newTaskID))
+        print "Created New task for {}".format(userid)
+        self.conn.commit()
 
-    rows = c.execute('''select * from tasks T where T.id in (select taskid from hastask where userid={})'''.format(userid))
-    retarray = []
-    for row in rows:
-        retarray.append(row)
-    return retarray
+    @checkUserCredentials
+    def getActiveTasksForUser(self):
+        tasks = []
+        for row in self.cursor.execute('''select * from tasks where completed='f' and id in (select taskid from hastask where userid={})'''.format(userid)):
+            task = {}
+            i = 0
+            for column_name in TASK_COLUMNS:
+                task[column_name] = row[i]
+                i += 1
+            tasks.append(task)
+        return tasks
+
+    @checkUserCredentials
+    def getNextCountdown(self):
+        rows = self.cursor.execute('''select * from tasks T where T.id in (select taskid from hastask where userid={})'''.format(userid))
+        retarray = []
+        for row in rows:
+            retarray.append(row)
+        return retarray
 
 #used for testing
 if __name__ == "__main__":
