@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import request
-from DBResources import *
+from DBResources import DBResource
 import json
 app = Flask(__name__)
 
@@ -18,8 +18,9 @@ app = Flask(__name__)
 def createNewUser():
     ret = {}
     req = json.loads(request.get_data())
-    if (not doesUserExist(req['username'])):
-        createUser(req['username'], req['password'])
+    db = DBResource(user_info=req['user_info'])
+    if (not db.doesUserExist()):
+        db.createUser()
         ret['status'] = True
     else:
         ret['status'] = False
@@ -29,8 +30,9 @@ def createNewUser():
 def createNewTask():
     ret = {}
     req = json.loads(request.get_data())
-    if (doesUserExist(req['username'])):
-        createTask(getUserId(req['username']), req['task']['name'])
+    db = DBResource(req['user_info'])
+    if (db.doesUserExist()):
+        db.createTask(req['task'])
         ret['status'] = True
     else:
         ret['status'] = False
@@ -40,7 +42,8 @@ def createNewTask():
 def getActiveUserTasks():
     ret = {}
     req = json.loads(request.get_data())
-    ret['tasks'] = getActiveTasksForUser(getUserId(req['username']))
+    db = DBResource(req['user_info'])
+    ret['tasks'] = db.getActiveTasksForUser()
     return json.dumps(ret)
 
 if __name__ == "__main__":

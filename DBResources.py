@@ -1,8 +1,8 @@
 import sqlite3
 
+TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime']
 
 class DBResource:
-    TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime']
 
     def __init__(self, user_info=None, conn=None) :
         self.user_info = user_info
@@ -10,60 +10,64 @@ class DBResource:
             self.conn = sqlite3.connect('countdown.db')
         else:
             self.conn = conn
-        self.cursor = conn.cursor()
+        self.cursor = self.conn.cursor()
 
-    def checkUserCredentials(self, func):
+    def checkUserCredentials(func):
         def func_wrapper(*args, **kwargs):
-            if (verifyPassword):
-                return fun(*args, **kwargs)
+            if (args[0].verifyPassword()):
+                return func(*args, **kwargs)
             return {'Error': 'User {} given with invalid password.'}
         return func_wrapper
 
     def verifyPassword(self):
-        rows = self.cursor.execute('''select * from users where username='{}' and password='{}' '''.format(self.user_info['username', self.user_info['password']]))
+        rows = self.cursor.execute('''select * from users where username='{}' and password='{}' '''.format(self.user_info['username'], self.user_info['password']))
         for row in rows:
             return True
         return False
 
-    def getNumUsers(conn=None):
+    def getNumUsers(self, conn=None):
         rows = self.cursor.execute('''select count(*) from users''')
         for row in rows:
             return row[0]
 
-    def getNumTasks(conn=None):
+    def getNumTasks(self, conn=None):
         rows = self.cursor.execute('''select count(*) from tasks''')
         for row in rows:
             return row[0]
 
-    def createUser(username, password):
-        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(getNumUsers(conn), username, password))
-        print "Created new User {}".format(username)
+    def createUser(self):
+        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password']))
+        print "Created new User {}".format(self.user_info['username'])
         self.conn.commit()
 
-    def doesUserExist(username):
-        rows = self.cursor.execute('''select * from users where username='{}' '''.format(username))
+    def doesUserExist(self):
+        rows = self.cursor.execute('''select * from users where username='{}' '''.format(self.user_info['username']))
         for row in rows:
             return True
         return False
 
-    def getUserId(username):
+    def getUserId(self, username):
         rows = self.cursor.execute('''select * from users where username='{}' '''.format(username))
         for row in rows:
             return row[0]
         return -1
 
+    def getCurrentUserId(self):
+        return self.getUserId(self.user_info['username'])
 
     @checkUserCredentials
-    def createTask(name):
-        newTaskID = self.getNumTasks()
-        self.cursor.execute('''INSERT INTO tasks (id, name, completed) VALUES ({}, '{}', 'f')'''.format(newTaskID, name))
-        self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, newTaskID))
+    def createTask(self, task):
+        task['id'] = self.getNumTasks()
+        userid = self.getCurrentUserId()
+        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME({duedate}), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL)'''.format(task['id'], **task))
+        self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, task['id']))
         print "Created New task for {}".format(userid)
         self.conn.commit()
 
     @checkUserCredentials
     def getActiveTasksForUser(self):
         tasks = []
+        userid = self.getCurrentUserId()
         for row in self.cursor.execute('''select * from tasks where completed='f' and id in (select taskid from hastask where userid={})'''.format(userid)):
             task = {}
             i = 0
