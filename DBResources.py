@@ -36,7 +36,7 @@ class DBResource:
             return row[0]
 
     def createUser(self):
-        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password']))
+        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password'])).fetchall()
         print "Created new User {}".format(self.user_info['username'])
         self.conn.commit()
 
@@ -47,8 +47,7 @@ class DBResource:
         return False
 
     def getUserId(self, username):
-        rows = self.cursor.execute('''select * from users where username='{}' '''.format(username))
-        for row in rows:
+        for row in self.cursor.execute('''select * from users where username='{}' '''.format(username)):
             return row[0]
         return -1
 

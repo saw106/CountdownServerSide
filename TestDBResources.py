@@ -1,6 +1,7 @@
 import unittest
 from DBResources import *
 import sqlite3
+import time
 
 # Common fields
 test_db_conn = sqlite3.connect('countdown_test.db')
@@ -59,8 +60,8 @@ class TestDBResources(unittest.TestCase):
                     'tag': 'things I hate to do',
                     'backgroundhex': '#000000',
                     'foregroundhex': '#000000'}
-        print self.db.createUser()
-        print self.db.createTask(test_task)
+        self.db.createUser()
+        self.db.createTask(test_task)
         test_conn = self.db.conn
         test_conn.row_factory = sqlite3.Row
         c = test_conn.cursor()
@@ -69,8 +70,7 @@ class TestDBResources(unittest.TestCase):
         self.assertIsNotNone(r)
         self.assertEquals(test_task['name'], r['name'])
         task_id = r['id']
-        user_1_id = self.db.getUserId('test_name_123')
-        print user_1_id
+        user_1_id = self.db.getCurrentUserId()
         # Check that the task was actually created in hastask with correct userid and taskid
         r2 = c.execute('''SELECT * FROM hastask H WHERE H.userid={} AND H.taskid={}'''.format(user_1_id, task_id)).fetchone()
         self.assertIsNotNone(r2)
