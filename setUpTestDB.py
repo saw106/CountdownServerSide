@@ -1,5 +1,4 @@
 import sqlite3
-from DBResources import *
 
 conn = sqlite3.connect('countdown_test.db')
 
