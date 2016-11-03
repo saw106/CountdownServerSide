@@ -16,7 +16,7 @@ class DBResource:
         def func_wrapper(*args, **kwargs):
             if (args[0].verifyPassword()):
                 return func(*args, **kwargs)
-            return {'Error': 'User {} given with invalid password.'}
+            return {'Error': 'User {} given with invalid password.'.format(args[0].user_info['username'])}
         return func_wrapper
 
     def verifyPassword(self):
@@ -25,12 +25,12 @@ class DBResource:
             return True
         return False
 
-    def getNumUsers(self, conn=None):
+    def getNumUsers(self):
         rows = self.cursor.execute('''select count(*) from users''')
         for row in rows:
             return row[0]
 
-    def getNumTasks(self, conn=None):
+    def getNumTasks(self):
         rows = self.cursor.execute('''select count(*) from tasks''')
         for row in rows:
             return row[0]
@@ -59,9 +59,9 @@ class DBResource:
     def createTask(self, task):
         task['id'] = self.getNumTasks()
         userid = self.getCurrentUserId()
-        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME({duedate}), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL)'''.format(task['id'], **task))
+        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME('{duedate}', 'unixepoch'), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL)'''.format(**task))
         self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, task['id']))
-        print "Created New task for {}".format(userid)
+        print "Created New task for {}".format(self.user_info['username'])
         self.conn.commit()
 
     @checkUserCredentials
