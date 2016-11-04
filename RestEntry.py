@@ -11,7 +11,7 @@ app = Flask(__name__)
      unarchivetask
      completetask
      deletetask
-     getNextCountDownForUser
+     getNextCountDownForUser x
 '''
 
 @app.route("/create_user", methods=["POST"])
@@ -36,6 +36,7 @@ def createNewTask():
         ret['status'] = True
     else:
         ret['status'] = False
+        ret['problem'] = "User {} does not exist.".format(req['user_info']['username'])
     return json.dumps(ret)
 
 @app.route('/get_active_tasks', methods=["GET"])
@@ -44,6 +45,20 @@ def getActiveUserTasks():
     req = json.loads(request.get_data())
     db = DBResource(req['user_info'])
     ret['tasks'] = db.getActiveTasksForUser()
+    return json.dumps(ret)
+
+@app.route('/get_next_countdown', methods=['GET'])
+def getNextCountdownForUser():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(req['user_info'])
+    if (db.doesUserExist()):
+        task = db.getNextCountdown()
+        ret['task'] = task
+        ret['status'] = True
+    else:
+        ret['status'] = False
+        ret['problem'] = "User {} does not exist".format(req['user_info']['username'])
     return json.dumps(ret)
 
 if __name__ == "__main__":

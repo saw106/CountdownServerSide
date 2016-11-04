@@ -78,15 +78,12 @@ class DBResource:
 
     @checkUserCredentials
     def getNextCountdown(self):
-        rows = self.cursor.execute('''select * from tasks T where T.id in (select taskid from hastask where userid={})'''.format(userid))
-        retarray = []
+        userid = self.getCurrentUserId()
+        rows = self.cursor.execute('''select * from tasks T where T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
         for row in rows:
-            retarray.append(row)
-        return retarray
+            return row
 
 #used for testing
 if __name__ == "__main__":
-    conn = sqlite3.connect('countdown.db')
-    # createUser('testuser', 'pw', conn=conn)
-    # createNewTask(0, 'sometask1', conn=conn)
-    print getActiveTasksForUser(0)
+    db = DBResource(user_info={'username':'walter', 'password':'wat'})
+    print db.getNextCountdown()
