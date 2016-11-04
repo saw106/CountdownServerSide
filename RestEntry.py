@@ -12,6 +12,7 @@ app = Flask(__name__)
      completetask
      deletetask
      getNextCountDownForUser x
+     login x
 '''
 
 @app.route("/create_user", methods=["POST"])
@@ -59,6 +60,14 @@ def getNextCountdownForUser():
     else:
         ret['status'] = False
         ret['problem'] = "User {} does not exist".format(req['user_info']['username'])
+    return json.dumps(ret)
+
+@app.route('/login', methods=['GET'])
+def login():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(req['user_info'])
+    ret['status'] = db.verifyPassword()
     return json.dumps(ret)
 
 if __name__ == "__main__":
