@@ -7,12 +7,13 @@ app = Flask(__name__)
 '''  createuser x
      createtask x
      getactivetasksforuser x
-     getarchivedtasksforuser
+     getarchivedtasksforuser x
      unarchivetask
      completetask
      deletetask
      getNextCountDownForUser x
      login x
+     edittask
 '''
 
 @app.route("/create_user", methods=["POST"])
@@ -46,6 +47,14 @@ def getActiveUserTasks():
     req = json.loads(request.get_data())
     db = DBResource(req['user_info'])
     ret['tasks'] = db.getActiveTasksForUser()
+    return json.dumps(ret)
+
+@app.route('/get_inactive_tasks', methods=["GET"])
+def getInactiveUserTasks():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(req['user_info'])
+    ret['tasks'] = db.getArchivedTasksForUser()
     return json.dumps(ret)
 
 @app.route('/get_next_countdown', methods=['GET'])

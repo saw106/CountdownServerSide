@@ -65,9 +65,17 @@ class DBResource:
 
     @checkUserCredentials
     def getActiveTasksForUser(self):
+        return self.getActiveOrNotTasksForUser(False)
+
+    @checkUserCredentials
+    def getArchivedTasksForUser(self):
+        return self.getActiveOrNotTasksForUser(True)
+
+    def getActiveOrNotTasksForUser(self, completed):
         tasks = []
+        completedSQL = {True: 't', False:'f'}
         userid = self.getCurrentUserId()
-        for row in self.cursor.execute('''select * from tasks where completed='f' and id in (select taskid from hastask where userid={})'''.format(userid)):
+        for row in self.cursor.execute('''select * from tasks where completed='{}' and id in (select taskid from hastask where userid={})'''.format(completedSQL[completed], userid)):
             task = {}
             i = 0
             for column_name in TASK_COLUMNS:
@@ -79,7 +87,7 @@ class DBResource:
     @checkUserCredentials
     def getNextCountdown(self):
         userid = self.getCurrentUserId()
-        rows = self.cursor.execute('''select * from tasks T where T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
+        rows = self.cursor.execute('''select * from tasks T where T.completed='f' and T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
         for row in rows:
             return row
 
