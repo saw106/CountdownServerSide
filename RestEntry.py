@@ -4,20 +4,6 @@ from DBResources import DBResource
 import json
 app = Flask(__name__)
 
-'''  createuser x
-     createtask x
-     createsubtask x
-     getactivetasksforuser x
-     getarchivedtasksforuser x
-     getsubtaskof x
-     unarchivetask
-     completetask
-     deletetask
-     getNextCountDownForUser x
-     login x
-     edittask
-'''
-
 @app.route("/create_subtask", methods=["POST"])
 def createNewSubTask():
     ret = {}
@@ -40,9 +26,36 @@ def getSubTasks():
     return json.dumps(ret)
 
 @app.route("/unarchive_task", methods=["POST"])
+def unarchiveTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(user_info=req['user_info'])
+    ret['status'] = db.unarchiveTask(req['taskid'])
+    return json.dumps(ret)
+
 @app.route("/complete_task", methods=["POST"])
+def completeTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(user_info=req['user_info'])
+    ret['status'] = db.completeTask(req['taskid'])
+    return json.dumps(ret)
+
 @app.route("/delete_task", methods=["POST"])
+def deleteTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(user_info=req['user_info'])
+    ret['status'] = db.deleteTask(req['taskid'])
+    return json.dumps(ret)
+
 @app.route("/edit_task", methods=["POST"])
+def editTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(user_info=req['user_info'])
+    ret['status'] = db.editTask(req['task'])
+    return json.dumps(ret)
 
 @app.route("/create_user", methods=["POST"])
 def createNewUser():
