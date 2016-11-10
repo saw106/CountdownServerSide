@@ -126,7 +126,6 @@ class DBResource:
 
     def setTaskCompletion(self, taskid, completed):
         if self.hasAccessToTask(taskid):
-            userid = self.getCurrentUserId()
             status = truthMap[completed]
             self.cursor.execute('''update tasks set completed='{}' where id={} '''.format(status, taskid))
             self.conn.commit()
@@ -136,6 +135,24 @@ class DBResource:
     def hasAccessToTask(self, taskid):
         userid = self.getCurrentUserId()
         for row in self.cursor.execute('''select * from hastask where userid={} and taskid={}'''.format(userid, taskid)):
+            return True
+        return False
+
+    @checkUserCredentials
+    def deleteTask(self, taskid):
+        if self.hasAccessToTask(taskid):
+            userid = self.getCurrentUserId()
+            self.cursor.execute('''delete from hastask where taskid={} and userid={} '''.format(taskid, userid))
+            self.conn.commit()
+            return True
+        return False
+
+    @checkUserCredentials
+    def editTask(self, task):
+        if self.hasAccessToTask(task['id']):
+            self.cursor.execute('''update tasks set name='{name}', description='{description}', duedate=DATETIME('{duedate}', 'unixepoch'), 
+            priority='{priority}', tag='{tag}', backgroundhex='{backgroundhex}', foregroundhex='{foregroundhex}', lastmodified=DATETIME('now') where id={id}'''.format(**task))
+            self.conn.commit()
             return True
         return False
 

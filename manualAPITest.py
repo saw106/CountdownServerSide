@@ -82,3 +82,26 @@ if __name__ == "__main__":
     print "\nVerify in Active tasks"
     r = requests.get('http://localhost:5000/get_active_tasks', data=json.dumps({'user_info' :{'username':'walter', 'password': 'wat'}}))
     print r.content
+
+    print "\nDelete Task 0"
+    r = requests.post('http://localhost:5000/delete_task', data=json.dumps({'taskid': '0', 'user_info': {'username':'walter', 'password': 'wat'}}))
+    print r.content
+
+    print "\nVerify not in Active tasks"
+    r = requests.get('http://localhost:5000/get_active_tasks', data=json.dumps({'user_info' :{'username':'walter', 'password': 'wat'}}))
+    print r.content
+
+    print "\nEdit Task 1"
+    r = requests.post('http://localhost:5000/edit_task', data=json.dumps({'user_info': {'username':'walter', 'password': 'wat'}, 'task': 
+                                                    {'id': '1',
+                                                    'name': 'better task',
+                                                    'description': 'this is a task and it has been modified',
+                                                    'duedate': '1092901466',
+                                                    'priority': 'swag',
+                                                    'tag': 'wow',
+                                                    'backgroundhex': '#1111',
+                                                    'foregroundhex': '#1111'}}))
+    print r.content
+    print "\nVerify updates"
+    r = requests.get('http://localhost:5000/get_active_tasks', data=json.dumps({'user_info' :{'username':'walter', 'password': 'wat'}}))
+    print r.content
