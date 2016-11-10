@@ -1,6 +1,6 @@
 import sqlite3
 
-TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime']
+TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime', 'subtaskof']
 
 class DBResource:
 
@@ -55,19 +55,47 @@ class DBResource:
         return self.getUserId(self.user_info['username'])
 
     @checkUserCredentials
-    def createTask(self, task):
+    def createTask(self, task, parentTaskId=None):
         task['id'] = self.getNumTasks()
+        if parentTaskId is not None:
+            task['parent'] = parentTaskId
+        else:
+            task['parent'] = 'NULL'
         userid = self.getCurrentUserId()
-        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME('{duedate}', 'unixepoch'), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL)'''.format(**task))
+        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME('{duedate}', 'unixepoch'), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL, {parent})'''.format(**task))
         self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, task['id']))
         print "Created New task for {}".format(self.user_info['username'])
         self.conn.commit()
+        return task['id']
 
     @checkUserCredentials
     def getActiveTasksForUser(self):
+        return self.getActiveOrNotTasksForUser(False)
+
+    @checkUserCredentials
+    def getArchivedTasksForUser(self):
+        return self.getActiveOrNotTasksForUser(True)
+
+    def getActiveOrNotTasksForUser(self, completed):
         tasks = []
+        completedSQL = {True: 't', False:'f'}
         userid = self.getCurrentUserId()
-        for row in self.cursor.execute('''select * from tasks where completed='f' and id in (select taskid from hastask where userid={})'''.format(userid)):
+        for row in self.cursor.execute('''select * from tasks where subtaskof is null and completed='{}' and id in (select taskid from hastask where userid={})'''.format(completedSQL[completed], userid)):
+            task = {}
+            i = 0
+            for column_name in TASK_COLUMNS:
+                task[column_name] = row[i]
+                i += 1
+            tasks.append(task)
+        return tasks
+
+    @checkUserCredentials
+    def getSubTasksForTask(self, parentid):
+        userid = self.getCurrentUserId()
+        query = {'parentid': parentid, "userid": userid}
+        tasks = []
+        print query
+        for row in self.cursor.execute('''select * from tasks where subtaskof = {parentid} and id in (select taskid from hastask where userid={userid}) '''.format(**query)):
             task = {}
             i = 0
             for column_name in TASK_COLUMNS:
@@ -79,9 +107,14 @@ class DBResource:
     @checkUserCredentials
     def getNextCountdown(self):
         userid = self.getCurrentUserId()
-        rows = self.cursor.execute('''select * from tasks T where T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
+        rows = self.cursor.execute('''select * from tasks T where T.subtaskof is null and T.completed='f' and T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
+        task = {}
         for row in rows:
-            return row
+            i = 0
+            for column_name in TASK_COLUMNS:
+                task[column_name] = row[i]
+                i += 1
+            return task
 
 #used for testing
 if __name__ == "__main__":
