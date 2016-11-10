@@ -56,3 +56,29 @@ if __name__ == "__main__":
     print "\nSee subtasks of task 0"
     r = requests.post('http://localhost:5000/get_subtasks', data=json.dumps({'parentid': '0', 'user_info': {'username':'walter', 'password': 'wat'}}))
     print r.content
+
+    print "\nComplete subtask"
+    r = requests.post('http://localhost:5000/complete_task', data=json.dumps({'taskid': '2', 'user_info': {'username':'walter', 'password': 'wat'}}))
+    print r.content
+
+    print "\nCheck status of subtask"
+    r = requests.post('http://localhost:5000/get_subtasks', data=json.dumps({'parentid': '0', 'user_info': {'username':'walter', 'password': 'wat'}}))
+    print r.content
+
+    print "\nComplete task 1"
+    r = requests.post('http://localhost:5000/complete_task', data=json.dumps({'taskid': '1', 'user_info': {'username':'walter', 'password': 'wat'}}))
+    print r.content
+
+    print "\nVerify in Inactive Tasks, not in Active"
+    r = requests.get('http://localhost:5000/get_active_tasks', data=json.dumps({'user_info' :{'username':'walter', 'password': 'wat'}}))
+    print r.content
+    r = requests.get('http://localhost:5000/get_inactive_tasks', data=json.dumps({'user_info' :{'username':'walter', 'password': 'wat'}}))
+    print r.content    
+
+    print "\nUnarchive Task 1"
+    r = requests.post('http://localhost:5000/unarchive_task', data=json.dumps({'taskid': '1', 'user_info': {'username':'walter', 'password': 'wat'}}))
+    print r.content
+
+    print "\nVerify in Active tasks"
+    r = requests.get('http://localhost:5000/get_active_tasks', data=json.dumps({'user_info' :{'username':'walter', 'password': 'wat'}}))
+    print r.content

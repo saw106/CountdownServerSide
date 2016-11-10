@@ -1,6 +1,7 @@
 import sqlite3
 
 TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime', 'subtaskof']
+truthMap = {True:'t', False:'f'}
 
 class DBResource:
 
@@ -94,7 +95,6 @@ class DBResource:
         userid = self.getCurrentUserId()
         query = {'parentid': parentid, "userid": userid}
         tasks = []
-        print query
         for row in self.cursor.execute('''select * from tasks where subtaskof = {parentid} and id in (select taskid from hastask where userid={userid}) '''.format(**query)):
             task = {}
             i = 0
@@ -115,6 +115,29 @@ class DBResource:
                 task[column_name] = row[i]
                 i += 1
             return task
+
+    @checkUserCredentials
+    def unarchiveTask(self, taskid):
+        return self.setTaskCompletion(taskid, False)
+
+    @checkUserCredentials
+    def completeTask(self, taskid):
+        return self.setTaskCompletion(taskid, True)
+
+    def setTaskCompletion(self, taskid, completed):
+        if self.hasAccessToTask(taskid):
+            userid = self.getCurrentUserId()
+            status = truthMap[completed]
+            self.cursor.execute('''update tasks set completed='{}' where id={} '''.format(status, taskid))
+            self.conn.commit()
+            return True
+        return False
+
+    def hasAccessToTask(self, taskid):
+        userid = self.getCurrentUserId()
+        for row in self.cursor.execute('''select * from hastask where userid={} and taskid={}'''.format(userid, taskid)):
+            return True
+        return False
 
 #used for testing
 if __name__ == "__main__":

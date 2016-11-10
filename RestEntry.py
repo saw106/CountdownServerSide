@@ -10,8 +10,8 @@ app = Flask(__name__)
      getactivetasksforuser x
      getarchivedtasksforuser x
      getsubtaskof x
-     unarchivetask
-     completetask
+     unarchivetask x
+     completetask x
      deletetask
      getNextCountDownForUser x
      login x
@@ -40,7 +40,21 @@ def getSubTasks():
     return json.dumps(ret)
 
 @app.route("/unarchive_task", methods=["POST"])
+def unarchiveTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(user_info=req['user_info'])
+    ret['status'] = db.unarchiveTask(req['taskid'])
+    return json.dumps(ret)
+
 @app.route("/complete_task", methods=["POST"])
+def completeTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(user_info=req['user_info'])
+    ret['status'] = db.completeTask(req['taskid'])
+    return json.dumps(ret)
+
 @app.route("/delete_task", methods=["POST"])
 @app.route("/edit_task", methods=["POST"])
 
