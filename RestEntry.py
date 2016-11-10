@@ -6,8 +6,10 @@ app = Flask(__name__)
 
 '''  createuser x
      createtask x
+     createsubtask x
      getactivetasksforuser x
      getarchivedtasksforuser x
+     getsubtaskof x
      unarchivetask
      completetask
      deletetask
@@ -15,6 +17,32 @@ app = Flask(__name__)
      login x
      edittask
 '''
+
+@app.route("/create_subtask", methods=["POST"])
+def createNewSubTask():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(req['user_info'])
+    if (db.doesUserExist()):
+        db.createTask(req['task'], parentTaskId = req['parentid'])
+        ret['status'] = True
+    else:
+        ret['status'] = False
+        ret['problem'] = "User {} does not exist.".format(req['user_info']['username'])
+    return json.dumps(ret)
+
+@app.route("/get_subtasks", methods=["POST"])
+def getSubTasks():
+    ret = {}
+    req = json.loads(request.get_data())
+    db = DBResource(req['user_info'])
+    ret['tasks'] = db.getSubTasksForTask(req['parentid'])
+    return json.dumps(ret)
+
+@app.route("/unarchive_task", methods=["POST"])
+@app.route("/complete_task", methods=["POST"])
+@app.route("/delete_task", methods=["POST"])
+@app.route("/edit_task", methods=["POST"])
 
 @app.route("/create_user", methods=["POST"])
 def createNewUser():
@@ -34,7 +62,10 @@ def createNewTask():
     req = json.loads(request.get_data())
     db = DBResource(req['user_info'])
     if (db.doesUserExist()):
-        db.createTask(req['task'])
+        if req.has_key('parentid'):
+            db.createTask(req['task'], parentTaskId=req['parentid'])
+        else:    
+            db.createTask(req['task'])
         ret['status'] = True
     else:
         ret['status'] = False
