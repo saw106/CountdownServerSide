@@ -1,9 +1,13 @@
 import sqlite3
 
 TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime', 'subtaskof']
-truthMap = {True:'t', False:'f'}
+truthMap = {True:'true', False:'false'}
 
 class DBResource:
+
+    '''TODO
+        Make functions to convert from datetime.datetime.now() to ISO8601 format
+        make all truth values come in and leave as json booleans'''
 
     def __init__(self, user_info=None, conn=None) :
         self.user_info = user_info
@@ -63,7 +67,7 @@ class DBResource:
         else:
             task['parent'] = 'NULL'
         userid = self.getCurrentUserId()
-        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME('{duedate}', 'unixepoch'), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL, {parent})'''.format(**task))
+        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', '{duedate}', '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'false', NULL, {parent})'''.format(**task))
         self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, task['id']))
         print "Created New task for {}".format(self.user_info['username'])
         self.conn.commit()
@@ -79,7 +83,7 @@ class DBResource:
 
     def getActiveOrNotTasksForUser(self, completed):
         tasks = []
-        completedSQL = {True: 't', False:'f'}
+        completedSQL = {True: 'true', False:'false'}
         userid = self.getCurrentUserId()
         for row in self.cursor.execute('''select * from tasks where subtaskof is null and completed='{}' and id in (select taskid from hastask where userid={})'''.format(completedSQL[completed], userid)):
             task = {}
@@ -150,7 +154,7 @@ class DBResource:
     @checkUserCredentials
     def editTask(self, task):
         if self.hasAccessToTask(task['id']):
-            self.cursor.execute('''update tasks set name='{name}', description='{description}', duedate=DATETIME('{duedate}', 'unixepoch'), 
+            self.cursor.execute('''update tasks set name='{name}', description='{description}', duedate='{duedate}', 
             priority='{priority}', tag='{tag}', backgroundhex='{backgroundhex}', foregroundhex='{foregroundhex}', lastmodified=DATETIME('now') where id={id}'''.format(**task))
             self.conn.commit()
             return True
