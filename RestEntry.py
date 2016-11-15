@@ -4,32 +4,34 @@ from DBResources import DBResource
 import json
 app = Flask(__name__)
 
-@app.route("/create_subtask", methods=["POST"])
+@app.route("/create_subtask/<parentid>", methods=["POST"])
 def createNewSubTask():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_info)
     if (db.doesUserExist()):
         db.createTask(req['task'], parentTaskId = req['parentid'])
         ret['status'] = True
     else:
         ret['status'] = False
-        ret['problem'] = "User {} does not exist.".format(req['user_info']['username'])
+        ret['problem'] = "User {} does not exist.".format(user_info['username'])
     return json.dumps(ret)
 
-@app.route("/get_subtasks", methods=["POST"])
-def getSubTasks():
+@app.route("/get_subtasks/<parentid>", methods=["POST"])
+def getSubTasks(parentid):
     ret = {}
-    req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
-    ret['tasks'] = db.getSubTasksForTask(req['parentid'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_info)
+    ret['tasks'] = db.getSubTasksForTask(parentid)
     return json.dumps(ret)
 
 @app.route("/unarchive_task", methods=["POST"])
 def unarchiveTask():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(user_info=req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_info=user_info])
     ret['status'] = db.unarchiveTask(req['taskid'])
     return json.dumps(ret)
 
@@ -37,7 +39,8 @@ def unarchiveTask():
 def completeTask():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(user_info=req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_info=user_info)
     ret['status'] = db.completeTask(req['taskid'])
     return json.dumps(ret)
 
@@ -45,7 +48,8 @@ def completeTask():
 def deleteTask():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(user_info=req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     ret['status'] = db.deleteTask(req['taskid'])
     return json.dumps(ret)
 
@@ -53,7 +57,8 @@ def deleteTask():
 def editTask():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(user_info=req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     ret['status'] = db.editTask(req['task'])
     return json.dumps(ret)
 
@@ -73,7 +78,8 @@ def createNewUser():
 def createNewTask():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     if (db.doesUserExist()):
         if req.has_key('parentid'):
             db.createTask(req['task'], parentTaskId=req['parentid'])
@@ -89,7 +95,8 @@ def createNewTask():
 def getActiveUserTasks():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     ret['tasks'] = db.getActiveTasksForUser()
     return json.dumps(ret)
 
@@ -97,7 +104,8 @@ def getActiveUserTasks():
 def getInactiveUserTasks():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     ret['tasks'] = db.getArchivedTasksForUser()
     return json.dumps(ret)
 
@@ -105,7 +113,8 @@ def getInactiveUserTasks():
 def getNextCountdownForUser():
     ret = {}
     req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     if (db.doesUserExist()):
         task = db.getNextCountdown()
         ret['task'] = task
@@ -118,8 +127,8 @@ def getNextCountdownForUser():
 @app.route('/login', methods=['GET'])
 def login():
     ret = {}
-    req = json.loads(request.get_data())
-    db = DBResource(req['user_info'])
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_infouser_info)
     ret['status'] = db.verifyPassword()
     return json.dumps(ret)
 
