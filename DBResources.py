@@ -40,7 +40,7 @@ class DBResource:
 
     def createUser(self):
         now = self.turnTimeIntoISO8601Time(datetime.now())
-        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', '{}' '''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password'], now)).fetchall()
+        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', '{}') '''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password'], now)).fetchall()
         print "Created new User {}".format(self.user_info['username'])
         self.conn.commit()
 
@@ -176,7 +176,7 @@ class DBResource:
 
     def turnTimeIntoISO8601Time(self, time):
         stringTime = str(time)
-        return re.sub(r'(.*) ([0-9][0-9]:[0-9][0-9]).*',r'\1T\2Z',time)
+        return re.sub(r'(.*) ([0-9][0-9]:[0-9][0-9]).*',r'\1T\2Z',stringTime)
 
 #used for testing
 if __name__ == "__main__":
