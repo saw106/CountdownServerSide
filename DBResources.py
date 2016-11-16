@@ -1,7 +1,9 @@
 import sqlite3
+import re
+from datetime import datetime as datetime
 
 TASK_COLUMNS = ['id', 'name', 'description', 'duedate', 'priority', 'tag', 'backgroundhex', 'foregroundhex', 'datecreated', 'lastmodified', 'completed', 'completiontime', 'subtaskof']
-truthMap = {True:'t', False:'f'}
+truthMap = {True:'true', False:'false', 'true': True, 'false': False}
 
 class DBResource:
 
@@ -37,7 +39,8 @@ class DBResource:
             return row[0]
 
     def createUser(self):
-        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', DATETIME('now'))'''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password'])).fetchall()
+        now = self.turnTimeIntoISO8601Time(datetime.now())
+        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', '{}') '''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password'], now)).fetchall()
         print "Created new User {}".format(self.user_info['username'])
         self.conn.commit()
 
@@ -58,12 +61,13 @@ class DBResource:
     @checkUserCredentials
     def createTask(self, task, parentTaskId=None):
         task['id'] = self.getNumTasks()
+        task['now'] = self.turnTimeIntoISO8601Time(datetime.now())
         if parentTaskId is not None:
             task['parent'] = parentTaskId
         else:
             task['parent'] = 'NULL'
         userid = self.getCurrentUserId()
-        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', DATETIME('{duedate}', 'unixepoch'), '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', DATETIME('now'), DATETIME('now'), 'f', NULL, {parent})'''.format(**task))
+        self.cursor.execute('''INSERT INTO tasks VALUES ({id}, '{name}', '{description}', '{duedate}', '{priority}', '{tag}', '{backgroundhex}', '{foregroundhex}', '{now}', '{now}', 'false', NULL, {parent})'''.format(**task))
         self.cursor.execute('''INSERT INTO hastask VALUES ({},{})'''.format(userid, task['id']))
         print "Created New task for {}".format(self.user_info['username'])
         self.conn.commit()
@@ -79,13 +83,16 @@ class DBResource:
 
     def getActiveOrNotTasksForUser(self, completed):
         tasks = []
-        completedSQL = {True: 't', False:'f'}
+        completedSQL = {True: 'true', False:'false'}
         userid = self.getCurrentUserId()
         for row in self.cursor.execute('''select * from tasks where subtaskof is null and completed='{}' and id in (select taskid from hastask where userid={})'''.format(completedSQL[completed], userid)):
             task = {}
             i = 0
             for column_name in TASK_COLUMNS:
-                task[column_name] = row[i]
+                if column_name is 'completed':
+                    task[column_name] = truthMap[row[i]]
+                else:
+                    task[column_name] = row[i]
                 i += 1
             tasks.append(task)
         return tasks
@@ -99,7 +106,10 @@ class DBResource:
             task = {}
             i = 0
             for column_name in TASK_COLUMNS:
-                task[column_name] = row[i]
+                if column_name is 'completed':
+                    task[column_name] = truthMap[row[i]]
+                else:
+                    task[column_name] = row[i]
                 i += 1
             tasks.append(task)
         return tasks
@@ -107,12 +117,15 @@ class DBResource:
     @checkUserCredentials
     def getNextCountdown(self):
         userid = self.getCurrentUserId()
-        rows = self.cursor.execute('''select * from tasks T where T.subtaskof is null and T.completed='f' and T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
+        rows = self.cursor.execute('''select * from tasks T where T.subtaskof is null and T.completed='false' and T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(duedate) from tasks)'''.format(userid))
         task = {}
         for row in rows:
             i = 0
             for column_name in TASK_COLUMNS:
-                task[column_name] = row[i]
+                if column_name is 'completed':
+                    task[column_name] = truthMap[row[i]]
+                else:
+                    task[column_name] = row[i]
                 i += 1
             return task
 
@@ -127,7 +140,11 @@ class DBResource:
     def setTaskCompletion(self, taskid, completed):
         if self.hasAccessToTask(taskid):
             status = truthMap[completed]
-            self.cursor.execute('''update tasks set completed='{}' where id={} '''.format(status, taskid))
+            now = self.turnTimeIntoISO8601Time(datetime.now())
+            completedtime = "NULL"
+            if completed:
+                completedtime = now
+            self.cursor.execute('''update tasks set completed='{}', completiontime='{}', lastmodified='{}' where id={} '''.format(status, completedtime, now, taskid))
             self.conn.commit()
             return True
         return False
@@ -150,13 +167,17 @@ class DBResource:
     @checkUserCredentials
     def editTask(self, task):
         if self.hasAccessToTask(task['id']):
-            self.cursor.execute('''update tasks set name='{name}', description='{description}', duedate=DATETIME('{duedate}', 'unixepoch'), 
-            priority='{priority}', tag='{tag}', backgroundhex='{backgroundhex}', foregroundhex='{foregroundhex}', lastmodified=DATETIME('now') where id={id}'''.format(**task))
+            task['now'] = self.turnTimeIntoISO8601Time(datetime.now())
+            self.cursor.execute('''update tasks set name='{name}', description='{description}', duedate='{duedate}', 
+            priority='{priority}', tag='{tag}', backgroundhex='{backgroundhex}', foregroundhex='{foregroundhex}', lastmodified='{now}' where id={id}'''.format(**task))
             self.conn.commit()
             return True
         return False
 
+    def turnTimeIntoISO8601Time(self, time):
+        stringTime = str(time)
+        return re.sub(r'(.*) ([0-9][0-9]:[0-9][0-9]).*',r'\1T\2Z',stringTime)
+
 #used for testing
 if __name__ == "__main__":
-    db = DBResource(user_info={'username':'walter', 'password':'wat'})
-    print db.getNextCountdown()
+    pass
