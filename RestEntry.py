@@ -24,6 +24,7 @@ def getSubTasks(parentid):
     user_info = {'username': request.authorization.username, 'password': request.authorization.password}
     db = DBResource(user_info)
     ret['tasks'] = db.getSubTasksForTask(parentid)
+    ret['status'] = True
     return json.dumps(ret)
 
 @app.route("/unarchive_task", methods=["POST"])
@@ -60,6 +61,7 @@ def editTask():
     user_info = {'username': request.authorization.username, 'password': request.authorization.password}
     db = DBResource(user_info=user_info)
     ret['status'] = db.editTask(req['task'])
+    ret['status'] = True
     return json.dumps(ret)
 
 @app.route("/create_user", methods=["POST"])
@@ -97,6 +99,7 @@ def getActiveUserTasks():
     user_info = {'username': request.authorization.username, 'password': request.authorization.password}
     db = DBResource(user_info=user_info)
     ret['tasks'] = db.getActiveTasksForUser()
+    ret['status'] = True
     return json.dumps(ret)
 
 @app.route('/get_inactive_tasks', methods=["GET"])
@@ -105,6 +108,7 @@ def getInactiveUserTasks():
     user_info = {'username': request.authorization.username, 'password': request.authorization.password}
     db = DBResource(user_info=user_info)
     ret['tasks'] = db.getArchivedTasksForUser()
+    ret['status'] = True
     return json.dumps(ret)
 
 @app.route('/get_next_countdown', methods=['GET'])
