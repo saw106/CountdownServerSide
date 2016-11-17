@@ -3,7 +3,7 @@ import json
 import unittest
 
 #Tests API calls
-class manualAPITest(unittest.TestCase):
+class APITest(unittest.TestCase):
 
     def test_01_CreateUser(self):
         r = requests.post('http://localhost:5000/create_user', data=json.dumps({'user_info': {'username': 'walter', 'password': 'wat'}}))
@@ -213,7 +213,6 @@ def get_status_result(str):
     if status_result.endswith("}"):
         status_result = status_result[:-1]
     return status_result
-
 
 
 if __name__ == "__main__":
