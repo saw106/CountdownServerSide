@@ -1,7 +1,6 @@
 import unittest
 from DBResources import *
 import sqlite3
-import time
 
 # Common fields
 test_db_conn = sqlite3.connect('countdown_test.db')
