@@ -17,4 +17,6 @@ Start the rest API/server with `python RestEntry.py`.
 The SQLite database is file based and needs no setup besides initializing with `python setUpDB.py`
 
 UNIT TESTS:
-First, run setUpTestDB to populate the test database. Then you can run the unit tests in TestDBResources.py.
+First, run setUpTestDB.py to populate the test database. Then you can run the unit tests in TestDBResources.py.
+
+Similarly, run setUpDB.py to set up the database in order to run the functional tests in APITest.py.
