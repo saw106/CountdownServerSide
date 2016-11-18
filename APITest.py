@@ -2,7 +2,8 @@ import requests
 import json
 import unittest
 
-#Tests API calls
+
+# Tests API calls
 class APITest(unittest.TestCase):
 
     def test_01_CreateUser(self):
@@ -21,37 +22,37 @@ class APITest(unittest.TestCase):
         requests.post('http://localhost:5000/create_user',
                       data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'}}))
         r = requests.post('http://localhost:5000/create_task',
-                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'}, 'task':
-                                                         {'name': 'good task',
-                                                          'description': 'this is a task and it will be done',
-                                                          'duedate': '1092941466',
-                                                          'priority': 'omega',
-                                                          'tag': 'things I hate to do',
-                                                          'backgroundhex': '#000000',
-                                                          'foregroundhex': '#000000'}}))
+                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'},
+                                           'task': {'name': 'good task',
+                                                    'description': 'this is a task and it will be done',
+                                                    'duedate': '1092941466',
+                                                    'priority': 'omega',
+                                                    'tag': 'things I hate to do',
+                                                    'backgroundhex': '#000000',
+                                                    'foregroundhex': '#000000'}}))
         self.assertEquals("true", get_status_result(r.content))
         r = requests.post('http://localhost:5000/create_task',
-                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'}, 'task':
-                                                          {'name': 'good task',
-                                                          'description': 'this is a task and it will be done',
-                                                          'duedate': '1092901466',
-                                                          'priority': 'omega',
-                                                          'tag': 'things I hate to do',
-                                                          'backgroundhex': '#000000',
-                                                          'foregroundhex': '#000000'}}))
+                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'},
+                                           'task': {'name': 'good task',
+                                                    'description': 'this is a task and it will be done',
+                                                    'duedate': '1092901466',
+                                                    'priority': 'omega',
+                                                    'tag': 'things I hate to do',
+                                                    'backgroundhex': '#000000',
+                                                    'foregroundhex': '#000000'}}))
 
         self.assertEquals("true", get_status_result(r.content))
 
     def test_05_CreateSubtask(self):
         r = requests.post('http://localhost:5000/create_subtask', data=json.dumps(
-            {'parentid': '0', 'user_info': {'username': 'joe', 'password': 'wat'}, 'task':
-                                            {'name': 'I AM A SUBTASK',
-                                            'description': 'I DO NOT BELONG WITH NORMAL TASKS',
-                                            'duedate': '1092938466',
-                                            'priority': 'omega',
-                                            'tag': 'things I hate to do',
-                                            'backgroundhex': '#000000',
-                                            'foregroundhex': '#000000'}}))
+            {'parentid': '0', 'user_info': {'username': 'joe', 'password': 'wat'},
+                                            'task': {'name': 'I AM A SUBTASK',
+                                                     'description': 'I DO NOT BELONG WITH NORMAL TASKS',
+                                                     'duedate': '1092938466',
+                                                     'priority': 'omega',
+                                                     'tag': 'things I hate to do',
+                                                     'backgroundhex': '#000000',
+                                                     'foregroundhex': '#000000'}}))
         self.assertEquals("true", get_status_result(r.content))
 
     def test_06_SeeActiveTasks(self):
@@ -59,7 +60,7 @@ class APITest(unittest.TestCase):
                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'}}))
         # I had to leave out the datetime values because those will be different
         expected1 = ("""{"tasks": [{"description": "this is a task and it will be done","""
-                                      """ "backgroundhex": "#000000",""")
+                     """ "backgroundhex": "#000000",""")
         expected2 = (""" "completed": "f","""
                      """ "id": 1,"""
                      """ "priority": "omega","""
@@ -67,20 +68,20 @@ class APITest(unittest.TestCase):
                      """ "completiontime": null,""")
 
         expected3 = (""" "foregroundhex": "#000000","""
-                                      """ "subtaskof": null,"""
-                                      """ "duedate": "2004-08-19 18:51:06","""
-                                      """ "name": "good task"},""")
+                     """ "subtaskof": null,"""
+                     """ "duedate": "2004-08-19 18:51:06","""
+                     """ "name": "good task"},""")
         expected4 = ("""{"description": "this is a task and it will be done","""
-                                      """ "backgroundhex": "#000000",""")
+                     """ "backgroundhex": "#000000",""")
         expected5 = (""" "completed": "f","""
-                                      """ "id": 1,"""
-                                      """ "priority": "omega","""
-                                      """ "tag": "things I hate to do","""
-                                      """ "completiontime": null,""")
+                     """ "id": 1,"""
+                     """ "priority": "omega","""
+                     """ "tag": "things I hate to do","""
+                     """ "completiontime": null,""")
         expected6 = (""" "foregroundhex": "#000000","""
-                                      """ "subtaskof": null,"""
-                                      """ "duedate": "2004-08-19 07:44:26","""
-                                      """ "name": "good task"}]}""")
+                     """ "subtaskof": null,"""
+                     """ "duedate": "2004-08-19 07:44:26","""
+                     """ "name": "good task"}]}""")
         self.assertTrue(expected1 in r.content)
         self.assertTrue(expected2 in r.content)
         self.assertTrue(expected3 in r.content)
@@ -179,15 +180,15 @@ class APITest(unittest.TestCase):
 
     def test_14_EditTask1(self):
         r = requests.post('http://localhost:5000/edit_task',
-                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'}, 'task':
-                                                        {'id': '1',
-                                                        'name': 'better task',
-                                                        'description': 'this is a task and it has been modified',
-                                                        'duedate': '1092901466',
-                                                        'priority': 'swag',
-                                                        'tag': 'wow',
-                                                        'backgroundhex': '#1111',
-                                                        'foregroundhex': '#1111'}}))
+                          data=json.dumps({'user_info': {'username': 'joe', 'password': 'wat'},
+                                           'task': {'id': '1',
+                                                    'name': 'better task',
+                                                    'description': 'this is a task and it has been modified',
+                                                    'duedate': '1092901466',
+                                                    'priority': 'swag',
+                                                    'tag': 'wow',
+                                                    'backgroundhex': '#1111',
+                                                    'foregroundhex': '#1111'}}))
         self.assertEquals("true", get_status_result(r.content))
         # Verify the updates
         r = requests.get('http://localhost:5000/get_active_tasks',
