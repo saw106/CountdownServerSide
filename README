@@ -18,3 +18,7 @@ The SQLite database is file based and needs no setup besides initializing with `
 
 UNIT TESTS:
 First, run setUpTestDB to populate the test database. Then you can run the unit tests in TestDBResources.py.
+
+
+Functional Tests/Code Coverage:
+	Again, run `python setUpDB.py` to make sure the database has been initialized.
