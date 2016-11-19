@@ -1,6 +1,7 @@
 cover:
-	coverage run TestDBResources.py
-	coverage html
+	coverage run --omit="/usr/*" RestEntry.py
+report:
+	coverage html 
 clean:
 	rm .coverage
 	rm -rf htmlcov

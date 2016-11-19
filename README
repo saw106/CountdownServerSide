@@ -19,4 +19,13 @@ The SQLite database is file based and needs no setup besides initializing with `
 UNIT TESTS:
 First, run setUpTestDB.py to populate the test database. Then you can run the unit tests in TestDBResources.py.
 
-Similarly, run setUpDB.py to set up the database in order to run the functional tests in APITest.py.
+Functional Tests/Code Coverage:
+	Similarly, run setUpDB.py to set up the database in order to run the functional tests in APITest.py.
+	
+	To run coverage, we have set up a makefile with commands. This will require two terminals
+	1. `make cover` to start Flask
+	2. `python APITest.py` in another terminal to run the functional tests
+	3. CTRL+C in the terminal 1 to stop the Flask server and finish covering
+	4. `make report` to generate coverage html files in ./htmlcov
+
+	The index file is ./htmlcov/index.html
