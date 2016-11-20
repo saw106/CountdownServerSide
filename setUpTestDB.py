@@ -27,11 +27,11 @@ c.execute('''INSERT INTO users
              VALUES (2, "user_3", "password_3", "2016-9-3T00:00Z")''')
 
 c.execute('''INSERT INTO tasks
-             VALUES (11, "task_1", "description_1", "11-12016T00:00Z", "1", "tag_1", "AAAAAA", "BBBBBB",
+             VALUES (11, "task_1", "description_1", "2016-11-1T00:00Z", "1", "tag_1", "AAAAAA", "BBBBBB",
                      "2016-10-1T00:00Z", "2016-10-26T00:00Z", "true",
                      "2016-10-26T00:00Z", NULL)''')
 c.execute('''INSERT INTO tasks
-             VALUES (12, "task_2", "description_2", "11/15/2016T12:30Z 12:30PM", "2", "tag_1", "FFFFFF", "BBBBBB",
+             VALUES (12, "task_2", "description_2", "2016-11-15T12:30Z 12:30PM", "2", "tag_1", "FFFFFF", "BBBBBB",
                      "2016-10-1T00:00Z", "2016-10-1T00:00Z", "false", null, NULL)''')
 c.execute('''INSERT INTO tasks
              VALUES (13, "task_3", "description_3", "2016-11-1T00:00Z", "1", "tag_2", "AAAAAA", "BBBBBB",
