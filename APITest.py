@@ -158,6 +158,9 @@ class APITest(unittest.TestCase):
         # Verify that it's not in active tasks
         r = requests.get('http://localhost:5000/get_active_tasks', headers=joe_headers)
         self.assertTrue(""" "id": 0""" not in r.content)
+        # Since there's only 1 user on this task, verify that it's not in inactive tasks
+        r = requests.get('http://localhost:5000/get_inactive_tasks', headers=joe_headers)
+        self.assertTrue(""" "id": 0""" not in r.content)
 
     def test_14_EditTask1(self):
         r = requests.post('http://localhost:5000/edit_task', headers=joe_headers, data=json.dumps({'task': 

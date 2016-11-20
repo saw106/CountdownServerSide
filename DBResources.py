@@ -58,9 +58,14 @@ class DBResource:
     def getCurrentUserId(self):
         return self.getUserId(self.user_info['username'])
 
+    def getMaxTaskId(self):
+        rows = self.cursor.execute('''select MAX(taskid) from tasks''')
+        for row in rows:
+            return int(row[0])
+
     @checkUserCredentials
     def createTask(self, task, parentTaskId=None):
-        task['id'] = self.getNumTasks()
+        task['id'] = self.getMaxTaskId() + 1
         task['now'] = self.turnTimeIntoISO8601Time(datetime.now())
         if parentTaskId is not None:
             task['parent'] = parentTaskId
@@ -161,8 +166,21 @@ class DBResource:
             userid = self.getCurrentUserId()
             self.cursor.execute('''delete from hastask where taskid={} and userid={} '''.format(taskid, userid))
             self.conn.commit()
+            if self.isSingleUserTask(taskid):
+                self.cursor.execute('''delete from tasks where taskid={} '''.format(taskid))
+                self.conn.commit()
             return True
         return False
+
+    def isSingleUserTask(self, taskid):
+        numUsers = 0
+        for row in self.cursor.execute('''select * from hastask where taskid={}'''.format(taskid)):
+            numUsers += 1
+        if numUsers == 1:
+            return True
+        return False
+
+
 
     @checkUserCredentials
     def editTask(self, task):
