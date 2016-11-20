@@ -54,7 +54,7 @@ class TestDBResources(unittest.TestCase):
         self.db.user_info = test_user_info
         test_task = {'name': 'test_name_123',
                     'description': 'this is a task and it will be done',
-                    'duedate': '10-1-2016T00:00Z',
+                    'duedate': '2016-10-1T00:00Z',
                     'priority': 'omega',
                     'tag': 'things I hate to do',
                     'backgroundhex': '#000000',
