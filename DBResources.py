@@ -58,9 +58,14 @@ class DBResource:
     def getCurrentUserId(self):
         return self.getUserId(self.user_info['username'])
 
+    def getMaxTaskId(self):
+        rows = self.cursor.execute('''select MAX(taskid) from tasks''')
+        for row in rows:
+            return int(row[0])
+
     @checkUserCredentials
     def createTask(self, task, parentTaskId=None):
-        task['id'] = self.getNumTasks()
+        task['id'] = self.getMaxTaskId() + 1
         task['now'] = self.turnTimeIntoISO8601Time(datetime.now())
         if parentTaskId is not None:
             task['parent'] = parentTaskId
