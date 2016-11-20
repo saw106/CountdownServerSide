@@ -161,8 +161,21 @@ class DBResource:
             userid = self.getCurrentUserId()
             self.cursor.execute('''delete from hastask where taskid={} and userid={} '''.format(taskid, userid))
             self.conn.commit()
+            if self.isSingleUserTask(taskid):
+                self.cursor.execute('''delete from tasks where taskid={} '''.format(taskid))
+                self.conn.commit()
             return True
         return False
+
+    def isSingleUserTask(self, taskid):
+        numUsers = 0
+        for row in self.cursor.execute('''select * from hastask where taskid={}'''.format(taskid)):
+            numUsers += 1
+        if numUsers == 1:
+            return True
+        return False
+
+
 
     @checkUserCredentials
     def editTask(self, task):
