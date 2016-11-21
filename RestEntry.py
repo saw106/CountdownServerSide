@@ -11,7 +11,7 @@ def createNewSubTask():
     user_info = {'username': request.authorization.username, 'password': request.authorization.password}
     db = DBResource(user_info)
     if (db.doesUserExist()):
-        db.createTask(req['task'], parentTaskId = req['parentid'])
+        ret['taskid'] = db.createTask(req['task'], parentTaskId = req['parentid'])
         ret['status'] = True
     else:
         ret['status'] = False
@@ -84,9 +84,9 @@ def createNewTask():
     db = DBResource(user_info=user_info)
     if (db.doesUserExist()):
         if req.has_key('parentid'):
-            db.createTask(req['task'], parentTaskId=req['parentid'])
+            ret['taskid'] = db.createTask(req['task'], parentTaskId=req['parentid'])
         else:    
-            db.createTask(req['task'])
+            ret['taskid'] = db.createTask(req['task'])
         ret['status'] = True
     else:
         ret['status'] = False
