@@ -11,15 +11,16 @@ class APITest(unittest.TestCase):
 
     def test_01_CreateUser(self):
         r = requests.post('http://localhost:5000/create_user', data=json.dumps({'user_info': {'username': 'walter', 'password': 'wat'}}))
-        self.assertEquals("true", get_status_result(r.content))
+        print r.content
+        self.assertTrue(get_status_result(r.content))
 
     def test_02_LoggingInWithGoodCredentials(self):
         r = requests.get('http://localhost:5000/login', headers=walter_headers)
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue( get_status_result(r.content))
 
     def test_03_LoggingInWithBadCredentials(self):
         r = requests.get('http://localhost:5000/login', headers=joe_headers)
-        self.assertEquals("false", get_status_result(r.content))
+        self.assertFalse(get_status_result(r.content))
 
     def test_04_Create2Tasks(self):
         requests.post('http://localhost:5000/create_user',
@@ -32,7 +33,7 @@ class APITest(unittest.TestCase):
                                                     'tag': 'things I hate to do',
                                                     'backgroundhex': '#000000',
                                                     'foregroundhex': '#000000'}}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
         r = requests.post('http://localhost:5000/create_task', headers=joe_headers, data=json.dumps({'task': 
                                                     {'name': 'good task',
                                                     'description': 'this is a task and it will be done',
@@ -42,7 +43,7 @@ class APITest(unittest.TestCase):
                                                     'backgroundhex': '#000000',
                                                     'foregroundhex': '#000000'}}))
 
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
 
     def test_05_CreateSubtask(self):
         r = requests.post('http://localhost:5000/create_subtask', headers=joe_headers, data=json.dumps({'parentid': '0', 'task': 
@@ -53,7 +54,7 @@ class APITest(unittest.TestCase):
                                                     'tag': 'things I hate to do',
                                                     'backgroundhex': '#000000',
                                                     'foregroundhex': '#000000'}}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
 
     def test_06_SeeActiveTasks(self):
         r = requests.get('http://localhost:5000/get_active_tasks', headers=joe_headers)
@@ -120,7 +121,7 @@ class APITest(unittest.TestCase):
 
     def test_09_CompleteSubtask(self):
         r = requests.post('http://localhost:5000/complete_task', headers=joe_headers, data=json.dumps({'taskid': '2'}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
 
     def test_10_CheckStatusOfSubtask(self):
         r = requests.get('http://localhost:5000/get_subtasks/0', headers=joe_headers)
@@ -137,7 +138,7 @@ class APITest(unittest.TestCase):
 
     def test_11_CompleteTask1(self):
         r = requests.post('http://localhost:5000/complete_task', headers=joe_headers, data=json.dumps({'taskid': '1'}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
         # Verify that it's not in active tasks
         r = requests.get('http://localhost:5000/get_active_tasks', headers=joe_headers)
         self.assertTrue(""" "id": 1""" not in r.content)
@@ -147,14 +148,14 @@ class APITest(unittest.TestCase):
 
     def test_12_UnarchiveTask1(self):
         r = requests.post('http://localhost:5000/unarchive_task', headers=joe_headers, data=json.dumps({'taskid': '1'}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
         # Verify that it is in active tasks
         r = requests.get('http://localhost:5000/get_active_tasks', headers=joe_headers)
         self.assertTrue(""" "id": 1""" in r.content)
 
     def test_13_DeleteTask0(self):
         r = requests.post('http://localhost:5000/delete_task', headers=joe_headers, data=json.dumps({'taskid': '0'}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
         # Verify that it's not in active tasks
         r = requests.get('http://localhost:5000/get_active_tasks', headers=joe_headers)
         self.assertTrue(""" "id": 0""" not in r.content)
@@ -172,7 +173,7 @@ class APITest(unittest.TestCase):
                                             'tag': 'wow',
                                             'backgroundhex': '#1111',
                                             'foregroundhex': '#1111'}}))
-        self.assertEquals("true", get_status_result(r.content))
+        self.assertTrue(get_status_result(r.content))
         # Verify the updates
         r = requests.get('http://localhost:5000/get_active_tasks', headers=joe_headers)
         expected1 = ("""{"description": "this is a task and it has been modified","""
@@ -187,11 +188,9 @@ class APITest(unittest.TestCase):
         self.assertTrue(expected3 in r.content)
 
 
-def get_status_result(str):
-    status_result = str.split(" ")[1]
-    if status_result.endswith("}"):
-        status_result = status_result[:-1]
-    return status_result
+def get_status_result(string):
+    data = json.loads(string)
+    return data['status']
 
 
 if __name__ == "__main__":

@@ -28,19 +28,9 @@ class DBResource:
             return True
         return False
 
-    def getNumUsers(self):
-        rows = self.cursor.execute('''select count(*) from users''')
-        for row in rows:
-            return row[0]
-
-    def getNumTasks(self):
-        rows = self.cursor.execute('''select count(*) from tasks''')
-        for row in rows:
-            return row[0]
-
     def createUser(self):
         now = self.turnTimeIntoISO8601Time(datetime.now())
-        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', '{}') '''.format(self.getNumUsers(), self.user_info['username'], self.user_info['password'], now)).fetchall()
+        self.cursor.execute('''INSERT INTO users VALUES ({}, '{}', '{}', '{}') '''.format(self.getMaxUserId() + 1, self.user_info['username'], self.user_info['password'], now)).fetchall()
         print "Created new User {}".format(self.user_info['username'])
         self.conn.commit()
 
@@ -61,6 +51,15 @@ class DBResource:
     def getMaxTaskId(self):
         rows = self.cursor.execute('''select MAX(id) from tasks''')
         for row in rows:
+            if row[0] is None:
+                return -1
+            return int(row[0])
+
+    def getMaxUserId(self):
+        rows = self.cursor.execute('''select MAX(id) from users''')
+        for row in rows:
+            if row[0] is None:
+                return -1
             return int(row[0])
 
     @checkUserCredentials
