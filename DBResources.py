@@ -59,7 +59,7 @@ class DBResource:
         return self.getUserId(self.user_info['username'])
 
     def getMaxTaskId(self):
-        rows = self.cursor.execute('''select MAX(taskid) from tasks''')
+        rows = self.cursor.execute('''select MAX(id) from tasks''')
         for row in rows:
             return int(row[0])
 
