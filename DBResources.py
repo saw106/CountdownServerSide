@@ -179,6 +179,20 @@ class DBResource:
             return True
         return False
 
+    @checkUserCredentials
+    def getTask(self, taskid):
+        if self.hasAccessToTask(taskid):
+            for row in self.cursor.execute("select * from tasks where id={}".format(taskid)):
+                i = 0
+                task = {}
+                for column_name in TASK_COLUMNS:
+                    if column_name is 'completed':
+                        task[column_name] = truthMap[row[i]]
+                    else:
+                        task[column_name] = row[i]
+                    i += 1
+                return task
+        return None
 
 
     @checkUserCredentials

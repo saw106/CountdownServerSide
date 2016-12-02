@@ -187,6 +187,10 @@ class APITest(unittest.TestCase):
         self.assertTrue(expected2 in r.content)
         self.assertTrue(expected3 in r.content)
 
+    def test_15_GetSingleTask(self):
+        r = requests.get('http://localhost:5000/get_task/1', headers=joe_headers)
+        self.assertTrue(get_status_result(r.content))
+        self.assertTrue('''"id": 1''' in r.content)
 
 def get_status_result(string):
     data = json.loads(string)

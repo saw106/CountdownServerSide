@@ -27,6 +27,18 @@ def getSubTasks(parentid):
     ret['status'] = True
     return json.dumps(ret)
 
+@app.route("/get_task/<taskid>", methods=["GET"])
+def getSingleTask(taskid):
+    ret = {}
+    user_info = {'username': request.authorization.username, 'password': request.authorization.password}
+    db = DBResource(user_info)
+    ret['task'] = db.getTask(taskid)
+    if ret['task'] is not None:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    return json.dumps(ret)
+
 @app.route("/unarchive_task", methods=["POST"])
 def unarchiveTask():
     ret = {}
