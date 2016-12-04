@@ -15,12 +15,6 @@ class TestDBResources(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testGetNumUsers(self):
-        self.assertEqual(3, self.db.getNumUsers())
-
-    def testGetNumTasks(self):
-        self.assertEquals(7, self.db.getNumTasks())
-
     def testCreateNewUser(self):
         self.db.user_info = test_user_info
         self.db.createUser()
@@ -86,6 +80,10 @@ class TestDBResources(unittest.TestCase):
         self.db.user_info = {'username': 'user_2', 'password': 'password_2'}
         tasks_for_1 = self.db.getActiveTasksForUser()
         self.assertEquals(1, len(tasks_for_1))
+
+    def testVerifyPassword(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        self.assertTrue(self.db.verifyPassword())
 
 if __name__ == '__main__':
     unittest.main()
