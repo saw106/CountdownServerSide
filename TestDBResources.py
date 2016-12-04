@@ -49,7 +49,7 @@ class TestDBResources(unittest.TestCase):
         self.assertEquals(1, self.db.getUserId("user_2"))
 
     def testGetMaxTaskId(self):
-        self.assertEquals(17, self.db.getMaxTaskId())
+        self.assertEquals(18, self.db.getMaxTaskId())
 
     def testGetMaxUserId(self):
         self.assertEquals(2, self.db.getMaxUserId())
@@ -102,6 +102,14 @@ class TestDBResources(unittest.TestCase):
         self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
         tasks_for_2 = self.db.getArchivedTasksForUser()
         self.assertEquals(0, len(tasks_for_2))
+
+    def testGetSubtasksForTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        subtasks_for_11 = self.db.getSubTasksForTask(11)
+        self.assertEquals(0, len(subtasks_for_11))
+        self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
+        subtasks_for_17 = self.db.getSubTasksForTask(17)
+        self.assertEquals(1, len(subtasks_for_17))
 
 
 

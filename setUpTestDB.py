@@ -48,6 +48,9 @@ c.execute('''INSERT INTO tasks
 c.execute('''INSERT INTO tasks
              VALUES (17, "task_7", "description_7", "2016-11-1T07:30Z", "2", "tag_4", "AAAAAA", "BBBBBB",
                      "2016-10-1T00:00Z", "2016-10-1T00:00Z", "false", null, NULL)''')
+c.execute('''INSERT INTO tasks
+             VALUES (18, "task_8", "description_7", "2016-11-1T07:30Z", "2", "tag_4", "AAAAAA", "BBBBBB",
+                     "2016-10-1T00:00Z", "2016-10-1T00:00Z", "false", null, 17)''')
 
 c.execute('''INSERT INTO hastask
              VALUES (0, 11)''')
@@ -63,6 +66,8 @@ c.execute('''INSERT INTO hastask
              VALUES (1, 16)''')
 c.execute('''INSERT INTO hastask
              VALUES (2, 17)''')
+c.execute('''INSERT INTO hastask
+             VALUES (2, 18)''')
 
 
 c.execute
