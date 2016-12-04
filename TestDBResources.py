@@ -91,6 +91,18 @@ class TestDBResources(unittest.TestCase):
         tasks_for_1 = self.db.getActiveTasksForUser()
         self.assertEquals(1, len(tasks_for_1))
 
+    def testGetArchivedTasksForUser(self):
+        # Users with ids 0, 1, 2 were created in setUpTestDB with 1, 1, and 0 active tasks, respectively
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        tasks_for_0 = self.db.getArchivedTasksForUser()
+        self.assertEquals(1, len(tasks_for_0))
+        self.db.user_info = {'username': 'user_2', 'password': 'password_2'}
+        tasks_for_1 = self.db.getArchivedTasksForUser()
+        self.assertEquals(1, len(tasks_for_1))
+        self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
+        tasks_for_2 = self.db.getArchivedTasksForUser()
+        self.assertEquals(0, len(tasks_for_2))
+
 
 
 if __name__ == '__main__':
