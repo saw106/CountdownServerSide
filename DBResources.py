@@ -163,11 +163,11 @@ class DBResource:
     def deleteTask(self, taskid):
         if self.hasAccessToTask(taskid):
             userid = self.getCurrentUserId()
+            if self.isSingleUserTask(taskid):
+                self.cursor.execute('''delete from tasks where id={} '''.format(taskid))
+                self.conn.commit()
             self.cursor.execute('''delete from hastask where taskid={} and userid={} '''.format(taskid, userid))
             self.conn.commit()
-            if self.isSingleUserTask(taskid):
-                self.cursor.execute('''delete from tasks where taskid={} '''.format(taskid))
-                self.conn.commit()
             return True
         return False
 

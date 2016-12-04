@@ -15,11 +15,11 @@ class TestDBResources(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testGetNumUsers(self):
-        self.assertEqual(3, self.db.getNumUsers())
+    def testGetNewUserID(self):
+        self.assertEqual(2, self.db.getMaxUserId())
 
-    def testGetNumTasks(self):
-        self.assertEquals(7, self.db.getNumTasks())
+    def testGetNewTaskID(self):
+        self.assertEquals(17, self.db.getMaxTaskId())
 
     def testCreateNewUser(self):
         self.db.user_info = test_user_info
@@ -86,6 +86,29 @@ class TestDBResources(unittest.TestCase):
         self.db.user_info = {'username': 'user_2', 'password': 'password_2'}
         tasks_for_1 = self.db.getActiveTasksForUser()
         self.assertEquals(1, len(tasks_for_1))
+
+    def testEditTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        test_task = {'name': 'test_name_123',
+                    'description': 'this is a task and it will be done',
+                    'duedate': '2016-10-1T00:00Z',
+                    'priority': 'omega',
+                    'tag': 'things I hate to do',
+                    'backgroundhex': '#000000',
+                    'foregroundhex': '#000000'}
+        task_id = self.db.createTask(test_task)
+        test_task['name'] = "new test_name"
+        test_task['id'] = task_id
+        self.db.editTask(test_task)
+        task_from_db = self.db.getTask(task_id)
+        self.db.deleteTask(task_id)
+        self.assertTrue(task_from_db['name'] == 'new test_name')
+
+    def testTimeConversion(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        goodly_formatted_string = "2016/10/4T12:30Z"
+        new_date_string = self.db.turnTimeIntoISO8601Time("2016/10/4 12:30")
+        self.assertEquals(goodly_formatted_string, new_date_string)
 
 if __name__ == '__main__':
     unittest.main()
