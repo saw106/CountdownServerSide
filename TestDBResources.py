@@ -82,10 +82,48 @@ class TestDBResources(unittest.TestCase):
         # Users with ids 0 and 1 were created in setUpTestDB with 3 and 1 active tasks, respectively
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
         tasks_for_0 = self.db.getActiveTasksForUser()
-        self.assertEquals(3, len(tasks_for_0))
+        self.assertEquals(4, len(tasks_for_0))
         self.db.user_info = {'username': 'user_2', 'password': 'password_2'}
         tasks_for_1 = self.db.getActiveTasksForUser()
         self.assertEquals(1, len(tasks_for_1))
+
+    def testUnarchiveTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        self.db.unarchiveTask(11)
+        task = self.db.getTask(11)
+        self.assertFalse(task['completed'])
+        self.db.completeTask(11)
+
+    def testCompleteTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        self.db.completeTask(11)
+        task = self.db.getTask(11)
+        self.assertTrue(task['completed'])
+        self.db.unarchiveTask(11)
+
+    def testHasAccessToTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        self.assertTrue(self.db.hasAccessToTask(11))
+        self.assertFalse(self.db.hasAccessToTask(17))
+
+    def testDeleteTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        test_task = {'name': 'test_name_123',
+                    'description': 'this is a task and it will be done',
+                    'duedate': '2016-10-1T00:00Z',
+                    'priority': 'omega',
+                    'tag': 'things I hate to do',
+                    'backgroundhex': '#000000',
+                    'foregroundhex': '#000000'}
+        task_id = self.db.createTask(test_task)
+        self.db.deleteTask(task_id)
+        task = self.db.getTask(task_id)
+        self.assertEquals(task, None)
+
+    def testGetTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        task_from_db = self.db.getTask(11)
+        self.assertEquals(task_from_db['name'], 'task_1')
 
     def testEditTask(self):
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
@@ -102,7 +140,7 @@ class TestDBResources(unittest.TestCase):
         self.db.editTask(test_task)
         task_from_db = self.db.getTask(task_id)
         self.db.deleteTask(task_id)
-        self.assertTrue(task_from_db['name'] == 'new test_name')
+        self.assertEquals(task_from_db['name'], 'new test_name')
 
     def testTimeConversion(self):
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
