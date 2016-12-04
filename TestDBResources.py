@@ -181,7 +181,7 @@ class TestDBResources(unittest.TestCase):
     def testGetNextCountdown(self):
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
         countdown_1 = self.db.getNextCountdown()
-        self.assertEquals(12, countdown_1['id'])
+        self.assertEquals(13, countdown_1['id'])
         self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
         countdown_3 = self.db.getNextCountdown()
         self.assertEquals(17, countdown_3['id'])

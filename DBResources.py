@@ -121,7 +121,9 @@ class DBResource:
     @checkUserCredentials
     def getNextCountdown(self):
         userid = self.getCurrentUserId()
-        rows = self.cursor.execute('''select * from tasks T where T.subtaskof is null and T.completed='false' and T.id in (select taskid from hastask where userid={}) and T.duedate = (select min(TS.duedate) from tasks TS, hastask HS where TS.id = HS.taskid and HS.userid = {})'''.format(userid, userid))
+        rows = self.cursor.execute('''select * from tasks T where T.subtaskof is null and T.completed='false'
+                                      and T.id in (select taskid from hastask where userid={})
+                                      and T.duedate = (select min(TS.duedate) from tasks TS, hastask HS where TS.id = HS.taskid and HS.userid = {} and TS.completed='false')'''.format(userid, userid))
         task = {}
         for row in rows:
             i = 0
@@ -211,4 +213,4 @@ class DBResource:
 
 #used for testing
 if __name__ == "__main__":
-    pass
+    db = DBResource(user_info={'username':"user_1", 'password':'password_1'})
