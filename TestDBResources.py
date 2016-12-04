@@ -51,6 +51,9 @@ class TestDBResources(unittest.TestCase):
     def testGetMaxTaskId(self):
         self.assertEquals(17, self.db.getMaxTaskId())
 
+    def testGetMaxUserId(self):
+        self.assertEquals(2, self.db.getMaxUserId())
+
     def testCreateNewTask(self):
         self.db.user_info = test_user_info
         test_task = {'name': 'test_name_123',
