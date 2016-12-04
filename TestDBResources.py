@@ -19,7 +19,11 @@ class TestDBResources(unittest.TestCase):
         self.assertEqual(2, self.db.getMaxUserId())
 
     def testGetNewTaskID(self):
-        self.assertEquals(17, self.db.getMaxTaskId())
+        self.assertEquals(18, self.db.getMaxTaskId())
+
+    def testVerifyPassword(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        self.assertTrue(self.db.verifyPassword())
 
     def testCreateNewUser(self):
         self.db.user_info = test_user_info
@@ -49,6 +53,12 @@ class TestDBResources(unittest.TestCase):
         # user_1 and user_2 were created in setUpTestDB
         self.assertEquals(0, self.db.getUserId("user_1"))
         self.assertEquals(1, self.db.getUserId("user_2"))
+
+    def testGetMaxTaskId(self):
+        self.assertEquals(18, self.db.getMaxTaskId())
+
+    def testGetMaxUserId(self):
+        self.assertEquals(2, self.db.getMaxUserId())
 
     def testCreateNewTask(self):
         self.db.user_info = test_user_info
@@ -82,24 +92,24 @@ class TestDBResources(unittest.TestCase):
         # Users with ids 0 and 1 were created in setUpTestDB with 3 and 1 active tasks, respectively
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
         tasks_for_0 = self.db.getActiveTasksForUser()
-        self.assertEquals(4, len(tasks_for_0))
+        self.assertEquals(3, len(tasks_for_0))
         self.db.user_info = {'username': 'user_2', 'password': 'password_2'}
         tasks_for_1 = self.db.getActiveTasksForUser()
         self.assertEquals(1, len(tasks_for_1))
 
     def testUnarchiveTask(self):
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
-        self.db.unarchiveTask(11)
-        task = self.db.getTask(11)
+        self.db.completeTask(12)
+        self.db.unarchiveTask(12)
+        task = self.db.getTask(12)
         self.assertFalse(task['completed'])
-        self.db.completeTask(11)
 
     def testCompleteTask(self):
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
-        self.db.completeTask(11)
-        task = self.db.getTask(11)
+        self.db.completeTask(12)
+        task = self.db.getTask(12)
         self.assertTrue(task['completed'])
-        self.db.unarchiveTask(11)
+        self.db.unarchiveTask(12)
 
     def testHasAccessToTask(self):
         self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
@@ -147,6 +157,34 @@ class TestDBResources(unittest.TestCase):
         goodly_formatted_string = "2016/10/4T12:30Z"
         new_date_string = self.db.turnTimeIntoISO8601Time("2016/10/4 12:30")
         self.assertEquals(goodly_formatted_string, new_date_string)
+
+    def testGetArchivedTasksForUser(self):
+        # Users with ids 0, 1, 2 were created in setUpTestDB with 1, 1, and 0 active tasks, respectively
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        tasks_for_0 = self.db.getArchivedTasksForUser()
+        self.assertEquals(1, len(tasks_for_0))
+        self.db.user_info = {'username': 'user_2', 'password': 'password_2'}
+        tasks_for_1 = self.db.getArchivedTasksForUser()
+        self.assertEquals(1, len(tasks_for_1))
+        self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
+        tasks_for_2 = self.db.getArchivedTasksForUser()
+        self.assertEquals(0, len(tasks_for_2))
+
+    def testGetSubtasksForTask(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        subtasks_for_11 = self.db.getSubTasksForTask(11)
+        self.assertEquals(0, len(subtasks_for_11))
+        self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
+        subtasks_for_17 = self.db.getSubTasksForTask(17)
+        self.assertEquals(1, len(subtasks_for_17))
+
+    def testGetNextCountdown(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        countdown_1 = self.db.getNextCountdown()
+        self.assertEquals(12, countdown_1['id'])
+        self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
+        countdown_3 = self.db.getNextCountdown()
+        self.assertEquals(17, countdown_3['id'])
 
 if __name__ == '__main__':
     unittest.main()
