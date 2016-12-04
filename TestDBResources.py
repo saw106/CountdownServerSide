@@ -111,6 +111,14 @@ class TestDBResources(unittest.TestCase):
         subtasks_for_17 = self.db.getSubTasksForTask(17)
         self.assertEquals(1, len(subtasks_for_17))
 
+    def testGetNextCountdown(self):
+        self.db.user_info = {'username': 'user_1', 'password': 'password_1'}
+        countdown_1 = self.db.getNextCountdown()
+        self.assertEquals(12, countdown_1['id'])
+        self.db.user_info = {'username': 'user_3', 'password': 'password_3'}
+        countdown_3 = self.db.getNextCountdown()
+        self.assertEquals(17, countdown_3['id'])
+
 
 
 if __name__ == '__main__':
